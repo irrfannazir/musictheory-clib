@@ -4,7 +4,6 @@
 
 int main(){
     char *n = "Eb";
-    char *res;
     printChordFromScale("C");
     return 0;
 }

@@ -23,6 +23,9 @@ typedef enum{
 #endif
 
 
+#define get__index_of_sharpnote(NOTE) (NOTE < 'C')?((size_t)NOTE - 60):((size_t)NOTE - 67)
+#define get__startindex_of_flatnote(NOTE) (7 + (size_t)NOTE - 67)
+
 const char *notes[] = {
     "C", "C#",
     "D", "D#",
@@ -78,8 +81,9 @@ static inline int linearSearch(const int *arr, int value){
     return 0;
 }
 
-static inline const int getSharpNotation(char *res, char *note){
-    if (note[0] == '\0' || note[1] == '\0') return 0;
+static inline int getSharpNotation(char *res, char *note){
+    if (note[0] == '\0') return 0;
+    if (note[1] == '\0') return 0;
     if (note[1] == 'b' &&
         (
             note[0] == 'D' || 
@@ -109,11 +113,12 @@ static inline void getChordName(char chord_name[CHORD_MAX], const char base_note
 
 
 static inline hashkey_t getKeyValueOfNote(char note[NOTE_MAX], size_t len){
+    if(!(note[0] >= 'A' && note[0] <= 'G')) return -1;
     if(len == 1){
-        size_t i = ((int)note[0] - 67);
+        size_t i = get__index_of_sharpnote(note[0]);
         return hashed_value_notes[i].key;
     }else if(len == 2){
-        size_t start = 7 + ((int)note[0] - 67);
+        size_t start = get__startindex_of_flatnote(note[0]);
         for(size_t i = start; i < sizeof(hashed_value_notes)/ sizeof(hashed_value_notes[0]); i++){
             char *temp = hashed_value_notes[i].note;
             if(note[0] == temp[0] && note[1] == temp[1]) return hashed_value_notes[i].key;
@@ -129,19 +134,20 @@ static inline hashkey_t getBaseNoteIndex(char *scale){
     size_t len;
     base_note[0] = scale[0];
     base_note[1] = '\0';
+    len = 1;
     if (scale[1] == '#' || scale[1] == 'b') {
         base_note[1] = scale[1];
         base_note[2] = '\0';
         len = 2;
     }
-    len = 1;
     return getKeyValueOfNote(base_note, len);
 }
 
 static inline void printChordFromScale(char scale[CHORD_MAX]){
     scale_n cp_key = getScaleNotation(scale);
     const hashkey_t *scale_pattern = scale_patterns[cp_key];
-    
+    if(getBaseNoteIndex(scale) == -1) return;
+
     for(size_t i = 0; scale_pattern[i] != -1; i++){
         const hashkey_t current_note_index = (getBaseNoteIndex(scale) + scale_pattern[i]) % 12;
 
@@ -177,5 +183,7 @@ static inline void printNotesFromScale(char *scale){
 
 
 
+#undef get__index_of_sharpnote
+#undef get__startindex_of_flatnote
 
 #endif
