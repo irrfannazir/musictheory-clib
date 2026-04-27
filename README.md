@@ -1,18 +1,15 @@
 Try to use the functions in library
 
+----------------------------
 Types:
 
-    hashkey_t: An alias for int. It represents the semitone value (0 through 11) used for mathematical operations on musical intervals.
-----------------------------
-
+    hashkey_t: Just an alias for int, for the semitone value (0 through 11) used for mathematical operations on musical intervals
     scale_n (Enum):
         MAJOR: Represents a major quality.
         MINOR: Represents a minor quality.
-
-----------------------------
-
     size_t: A custom definition from stddef
 
+----------------------------
 Functions:
 
     getKeyValueOfNote
