@@ -1,10 +1,12 @@
 #ifndef MUSCONSTS_H
 #define MUSCONSTS_H
+#include "util.h"
 
 /*--------------------------
          basic types
  ---------------------------*/
 typedef int                 hashkey_t; // to understand its for index/key value which directs to string representation of musical notes
+typedef unsigned char       bool_t;
 typedef enum{
     MAJOR,
     MINOR
@@ -12,15 +14,15 @@ typedef enum{
 
 /*from stddef.h*/
 #ifdef _WIN64
-    typedef unsigned __int64 size_t;
+typedef unsigned __int64 size_t;
 #else
-    typedef unsigned int     size_t;
+typedef unsigned int     size_t;
 #endif
 #define DESC_SIZET
 
 
-#define get__index_of_sharpnote(NOTE) (NOTE < 'C')?((size_t)NOTE - 60):((size_t)NOTE - 67)
-#define get__startindex_of_flatnote(NOTE) (7 + (size_t)NOTE - 67)
+#define __if_its_minor_scale if(scale[1] == 'm' || scale[2] == 'm')
+
 
 const char *notes[] = {
     "C", "C#",
@@ -66,13 +68,13 @@ const hashkey_t scale_patterns[][12] = {
 };
 
 static inline scale_n getScaleNotation(char *scale){
-    if(scale[1] == 'm' || scale[2] == 'm') return MINOR;
+    __if_its_minor_scale return MINOR;
     return MAJOR;
 }
 
 static inline int getSharpNotation(char *res, char *note){
-    if (note[0] == '\0') return 0;
-    if (note[1] == '\0') return 0;
+    __if_char_is_null_(note[0]) return 0;
+    __if_char_is_null_(note[1]) return 0;
     if (note[1] == 'b' &&
         (
             note[0] == 'D' || 
@@ -91,23 +93,24 @@ static inline int getSharpNotation(char *res, char *note){
 }
 
 static inline hashkey_t getKeyValueOfNote(char *note, size_t len){
-    if(!(note[0] >= 'A' && note[0] <= 'G')) return -1;
-    if(len == 1){
-        size_t i = get__index_of_sharpnote(note[0]);
-        return hashed_value_notes[i].key;
-    }else if(len == 2){
-        size_t start = get__startindex_of_flatnote(note[0]);
-        for(size_t i = start; i < sizeof(hashed_value_notes)/ sizeof(hashed_value_notes[0]); i++){
-            char *temp = hashed_value_notes[i].note;
-            if(note[0] == temp[0] && note[1] == temp[1]) return hashed_value_notes[i].key;
-        }
-        return -1;
-    }else{
-        return -1;
+    __if_char_is_null_(note[0]) return -1;
+    __if_its_not_a_note(note) return -1;
+    size_t i;
+    switch(len){
+        case 1:
+            i = get__index_of_sharpnote(note[0]);
+            return hashed_value_notes[i].key;
+        case 2:
+            i = get__startindex_of_flatnote(note[0]);
+            for(size_t j = i; i < sizeof(hashed_value_notes)/ sizeof(hashed_value_notes[0]); i++){
+                const char *temp = hashed_value_notes[i].note;
+                if(note[0] == temp[0] && note[1] == temp[1]) return hashed_value_notes[i].key;
+            }
+        default:
+            return -1;
     }
 }
 
-#undef get__index_of_sharpnote
-#undef get__startindex_of_flatnote
+#undef __if_its_minor_scale
 
 #endif

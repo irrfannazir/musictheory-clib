@@ -1,7 +1,6 @@
 #ifndef MUSLIB_H // gaurds for third party
 #define MUSLIB_H
 #include "musconsts.h"
-#include "util.h"
 #include <stdio.h>
 
 
@@ -11,8 +10,10 @@
 
 
 static inline void getChordName(char chord_name[CHORD_MAX], const char base_note[NOTE_MAX], scale_n notation){
+    __if_char_is_null_(base_note[0]) return;
+    __if_its_not_a_note(base_note) return;
     size_t i;
-    const unsigned char isflat = base_note[1] != '\0';
+    const bool_t isflat = base_note[1] != '\0';
     chord_name[0] = base_note[0];
     if (isflat) chord_name[1] = base_note[1];
     for (i = 0; chord_notation[notation][i] != '\0'; i++) chord_name[1 + (isflat) + i] = chord_notation[notation][i];
@@ -20,6 +21,7 @@ static inline void getChordName(char chord_name[CHORD_MAX], const char base_note
 }
 
 static inline hashkey_t getBaseNoteIndex(char *scale){
+    __if_char_is_null_(scale[0]) return -1;
     char base_note[CHORD_MAX];
     size_t len;
     base_note[0] = scale[0];
@@ -34,6 +36,7 @@ static inline hashkey_t getBaseNoteIndex(char *scale){
 }
 
 static inline void printChordFromScale(char scale[CHORD_MAX]){
+    __if_char_is_null_(scale[0]) return;
     scale_n cp_key = getScaleNotation(scale);
     const hashkey_t *scale_pattern = scale_patterns[cp_key];
     if(getBaseNoteIndex(scale) == -1) return;
@@ -61,6 +64,7 @@ static inline void printChordFromScale(char scale[CHORD_MAX]){
 }
 
 static inline void printNotesFromScale(char *scale){
+    __if_char_is_null_(scale[0]) return;
     scale_n cp_key = getScaleNotation(scale);
     const int *scale_pattern = scale_patterns[cp_key];
     
