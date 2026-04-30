@@ -13,12 +13,14 @@ typedef enum{
 }                           scale_n; // for denoting type of chords and scale
 
 /*from stddef.h*/
-#ifdef _WIN64
-typedef unsigned __int64 size_t;
-#else
-typedef unsigned int     size_t;
+#ifndef DESC_SIZET
+  #ifdef _WIN64
+    typedef unsigned __int64 size_t;
+  #else
+    typedef unsigned int     size_t;
+  #endif
+  #define DESC_SIZET
 #endif
-#define DESC_SIZET
 
 
 #define __if_its_minor_scale if(scale[1] == 'm' || scale[2] == 'm')

@@ -5,5 +5,6 @@
 int main(){
     char *n = "Eb";
     printNotesFromScale(n);
+    printChordFromScale(n);
     return 0;
 }

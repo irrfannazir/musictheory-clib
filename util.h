@@ -4,6 +4,7 @@
 #else
     typedef unsigned int     size_t;
 #endif
+    #define DESC_SIZET
 #endif
 
 #define get__index_of_sharpnote(NOTE) (NOTE < 'C')?((size_t)NOTE - 60):((size_t)NOTE - 67)
