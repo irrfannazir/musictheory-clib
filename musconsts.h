@@ -69,12 +69,12 @@ const hashkey_t scale_patterns[][12] = {
     {0, 2, 3, 5, 7, 8, 10, -1}
 };
 
-static inline scale_n getScaleNotation(char *scale){
+static inline scale_n getScaleNotation(const char *scale){
     __if_its_minor_scale return MINOR;
     return MAJOR;
 }
 
-static inline int getSharpNotation(char *res, char *note){
+static inline int getSharpNotation(const char *note, char *res){
     __if_char_is_null_(note[0]) return 0;
     __if_char_is_null_(note[1]) return 0;
     if (note[1] == 'b' &&

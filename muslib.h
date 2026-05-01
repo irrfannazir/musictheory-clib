@@ -20,7 +20,7 @@ static inline void getChordName(char chord_name[CHORD_MAX], const char base_note
     chord_name[1 + isflat + i] = '\0';
 }
 
-static inline hashkey_t getBaseNoteIndex(char *scale){
+static inline hashkey_t getBaseNoteIndex(const char *scale){
     __if_char_is_null_(scale[0]) return -1;
     char base_note[CHORD_MAX];
     size_t len;
@@ -35,23 +35,23 @@ static inline hashkey_t getBaseNoteIndex(char *scale){
     return getKeyValueOfNote(base_note, len);
 }
 
-static inline bool_t findChordInScale(char *scale, int cni, int ni){
+static inline bool_t findChordInScale(const char *scale, int cni, int ni){
     register const scale_n cp_key = getScaleNotation(scale);
     const hashkey_t *scale_pattern = scale_patterns[cp_key];
     const hashkey_t spni = cni - getBaseNoteIndex(scale) + 12;
 
 
-    for(size_t k = 0; chord_patterns[ni][k] != -1; k++){
-        register hashkey_t current_note = (spni + chord_patterns[ni][k]) % 12;
+    for(size_t i = 0; chord_patterns[ni][i] != -1; i++){
+        register hashkey_t current_note = (spni + chord_patterns[ni][i]) % 12;
         if(!linearSearch(scale_pattern, current_note)) return 0;
     }
     return 1;
 }
 
-static inline void printChordFromScale(char scale[CHORD_MAX]){
+static inline void printChordFromScale(const char scale[CHORD_MAX]){
     __if_char_is_null_(scale[0]) return;
     if(getBaseNoteIndex(scale) == -1) return;
-    scale_n cp_key = getScaleNotation(scale);
+    const scale_n cp_key = getScaleNotation(scale);
     const hashkey_t *scale_pattern = scale_patterns[cp_key];
 
     for(size_t i = 0; scale_pattern[i] != -1; i++){
@@ -66,13 +66,13 @@ static inline void printChordFromScale(char scale[CHORD_MAX]){
     printf("\n");
 }
 
-static inline void printNotesFromScale(char *scale){
+static inline void printNotesFromScale(const char *scale){
     __if_char_is_null_(scale[0]) return;
-    scale_n cp_key = getScaleNotation(scale);
+    const scale_n cp_key = getScaleNotation(scale);
     const int *scale_pattern = scale_patterns[cp_key];
     
     for(int i = 0; scale_pattern[i] != -1; i++){
-        register int current_note_index = (getBaseNoteIndex(scale) + scale_pattern[i]) % 12;
+        register hashkey_t current_note_index = (getBaseNoteIndex(scale) + scale_pattern[i]) % 12;
         printf("%s\t", notes[current_note_index]);
     }
     printf("\n");
